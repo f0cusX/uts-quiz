@@ -1,0 +1,957 @@
+openapi: 3.0.1
+info:
+  title: UTS QUIZ
+  description: >
+    Добрый день. Мы надеемся, что вам не доставят проблем чтение
+    openapi-документации для лучшего понимания заданий и использование
+    методов API для просмотра результатов работы.
+  version: 1.0.0
+servers:
+  - url: './api'
+paths:
+  /v1/countries:
+    get:
+      summary: Cписок стран.
+      parameters:
+        - in: query
+          name: page
+          schema:
+            $ref: '#/components/schemas/Page'
+        - in: query
+          name: sort
+          schema:
+            $ref: '#/components/schemas/DefaultSort'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Range:
+              schema:
+                $ref: '#/components/schemas/ContentRange'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Country'
+      tags:
+        - Справочники
+  /v1/countries/{countryId}/cities:
+    get:
+      summary: Cписок городов.
+      parameters:
+        - in: path
+          name: countryId
+          required: true
+          schema:
+            type: integer
+            description: Идетификатор страны
+        - in: query
+          name: page
+          schema:
+            $ref: '#/components/schemas/Page'
+        - in: query
+          name: sort
+          schema:
+            $ref: '#/components/schemas/DefaultSort'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Range:
+              schema:
+                $ref: '#/components/schemas/ContentRange'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/City'
+      tags:
+        - Справочники
+  /v1/countries/{countryId}/cities/{cityId}/hotels:
+    get:
+      summary: Cписок отелей.
+      parameters:
+        - in: path
+          name: countryId
+          required: true
+          schema:
+            type: integer
+            description: Идетификатор страны
+            example: 1
+        - in: path
+          name: cityId
+          required: true
+          schema:
+            type: integer
+            description: Идетификатор города
+            example: 1
+        - in: query
+          name: page
+          schema:
+            $ref: '#/components/schemas/Page'
+        - in: query
+          name: sort
+          schema:
+            $ref: '#/components/schemas/DefaultSort'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Range:
+              schema:
+                $ref: '#/components/schemas/ContentRange'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Hotel'
+      tags:
+        - Справочники
+  /v1/special_offers:
+    get:
+      summary: Cписок акций.
+      operationId: getSpecialOffers
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SpecialOffer'
+      tags:
+        - Специальные предложения
+    post:
+      summary: Добавление акции
+      operationId: addSpecialOffer
+      requestBody:
+        description: Параметры создаваемой акции
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSpecialOffer'
+      responses:
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatedResponse'
+      tags:
+        - Специальные предложения
+  /v1/special_offers/{id}:
+    get:
+      summary: Детали акции.
+      operationId: getSpecialOffer
+      parameters:
+        - in: path
+          required: true
+          name: id
+          description: Идентификатор акции
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpecialOffer'
+      tags:
+        - Специальные предложения
+    delete:
+      summary: Удаление акции
+      operationId: removeSpecialOffer
+      parameters:
+        - in: path
+          required: true
+          name: id
+          description: Идентификатор акции
+      responses:
+        '204':
+          description: No content
+      tags:
+        - Специальные предложения
+  /v1/search_requests:
+    post:
+      summary: Новый поиск отелей
+      operationId: addSearchRequest
+      requestBody:
+        description: Параметры поиск
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSearchRequest'
+      responses:
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatedResponse'
+      tags:
+        - Поиск отелей
+  /v1/search_requests/{id}:
+    get:
+      summary: Данные поискового запроса.
+      operationId: getSearchRequest
+      parameters:
+        - in: path
+          required: true
+          name: id
+          description: Идентификатор поиска
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchRequest'
+      tags:
+        - Поиск отелей
+    delete:
+      summary: Удаление поиска
+      operationId: removeSearchRequest
+      parameters:
+        - in: path
+          required: true
+          name: id
+          description: Идентификатор поиска
+      responses:
+        '204':
+          description: No content
+      tags:
+        - Поиск отелей
+  /v1/search_requests/{searchId}/results:
+    get:
+      summary: Результаты поиска отелей.
+      operationId: getSearchResults
+      parameters:
+        - in: path
+          name: searchId
+          required: true
+          schema:
+            type: integer
+            description: Идетификатор поискового запроса
+        - in: query
+          name: page
+          schema:
+            $ref: '#/components/schemas/Page'
+        - in: query
+          name: sort
+          schema:
+            $ref: '#/components/schemas/PricingSort'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Range:
+              schema:
+                $ref: '#/components/schemas/ContentRange'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SearchResult'
+      tags:
+        - Поиск отелей
+  /v2/search_requests/{searchId}/results:
+    get:
+      summary: Результаты поиска со скидками.
+      operationId: getSearchResultsHasOffers
+      parameters:
+        - in: path
+          name: searchId
+          required: true
+          schema:
+            type: integer
+            description: Идетификатор поискового запроса
+        - in: query
+          name: page
+          schema:
+            $ref: '#/components/schemas/Page'
+        - in: query
+          name: sort
+          schema:
+            $ref: '#/components/schemas/PricingSort'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Range:
+              schema:
+                $ref: '#/components/schemas/ContentRange'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SearchResultV2'
+      tags:
+        - Задание 1
+  /v3/search_requests/{searchId}/results:
+    get:
+      summary: Результаты поиска сгруппированные.
+      operationId: getGroupSearchResults
+      parameters:
+        - in: path
+          name: searchId
+          required: true
+          schema:
+            type: integer
+            description: Идетификатор поискового запроса
+        - in: query
+          name: page
+          schema:
+            $ref: '#/components/schemas/Page'
+        - in: query
+          name: sort
+          schema:
+            $ref: '#/components/schemas/PricingSort'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Range:
+              schema:
+                $ref: '#/components/schemas/ContentRange'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SearchResultV3'
+      tags:
+        - Задание 2
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      title: Сообщение об ошибке
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              property:
+                type: string
+              message:
+                type: string
+    CreatedResponse:
+      type: object
+      title: Сообщение об успешном создании сущности
+      properties:
+        id:
+          type: integer
+          title: Идентификатор созданной сущности
+      required:
+        - id
+    ContentRange:
+      type: string
+      example: 'items 0-19/200'
+      description: Текущий диапазон выборки (с 0 по 19) и полное количество элементов (200)
+    Page:
+      type: object
+      title: Параметры постраничной выдачи
+      properties:
+        number:
+          type: integer
+          title: Номер страницы
+          default: 1
+        size:
+          type: integer
+          title: Количество элементов на страницу
+          default: 20
+    DefaultSort:
+      type: object
+      title: Параметры сортировки
+      properties:
+        property:
+          type: string
+          enum:
+            - name
+          default: name
+        order:
+          type: string
+          enum:
+            - asc
+            - desc
+          default: asc
+    PricingSort:
+      type: object
+      title: Параметры сортировки
+      properties:
+        property:
+          type: string
+          enum:
+            - name
+            - price
+          default: price
+        order:
+          type: string
+          enum:
+            - asc
+            - desc
+          default: asc
+    Country:
+      type: object
+      title: Страна
+      properties:
+        id:
+          type: integer
+          title: Идетификатор
+          example: 1
+        name:
+          type: string
+          title: Название
+          example: Великобритания
+      required:
+        - id
+        - name
+    City:
+      type: object
+      title: Город
+      properties:
+        id:
+          type: integer
+          title: Идетификатор
+          example: 1
+        name:
+          type: string
+          title: Название
+          example: Лондон
+        country:
+          $ref: '#/components/schemas/Country'
+      required:
+        - id
+        - name
+        - country
+    Hotel:
+      type: object
+      title: Отель
+      properties:
+        id:
+          type: integer
+          title: Идетификатор
+          example: 11476
+        name:
+          type: string
+          title: Название
+          example: 'Mercure London Bloomsbury'
+        city:
+          $ref: '#/components/schemas/City'
+      required:
+        - id
+        - name
+        - city
+    NamedItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          title: Идетификатор
+        name:
+          type: string
+          title: Название
+      required:
+        - id
+        - name
+    CreateSpecialOffer:
+      type: object
+      title: Запрос на добавление специального предложения (скидки)
+      properties:
+        subject:
+          $ref: '#/components/schemas/SpecialOfferSubject'
+        description:
+          type: string
+          title: Название (описание) акции
+          example: 'Туманный Альбион'
+        discount:
+          $ref: '#/components/schemas/Discount'
+      required:
+        - subject
+        - description
+        - discount
+    SpecialOfferSubject:
+      type: object
+      title: Субъект применения скидки
+      properties:
+        type:
+          type: string
+          title: Тип субъекта
+          description: К чему применяется скидка, ко всей стране, одному городу или конкретному отелю
+          enum:
+            - COUNTRY
+            - CITY
+            - HOTEL
+          example: HOTEL
+        id:
+          type: integer
+          title: Идентификатор субъекта
+          example: 11476
+      required:
+        - type
+        - id
+    Discount:
+      type: object
+      title: Правила вычисления скидки
+      properties:
+        type:
+          type: string
+          enum:
+            - A
+            - M
+          title: Тип скидки
+          description: A - абсолютная в РУБЛЯХ за 1 ночь, M - процент от полной стоимости
+          example: A
+        value:
+          type: integer
+          title: Размер скидки
+          description: Рубли или проценты, в зависимости от типа
+          example: 100
+      required:
+        - type
+        - value
+
+    SpecialOffer:
+      type: object
+      title: Специальное предложение
+      description: Описание акции/скидки
+      properties:
+        id:
+          type: integer
+          title: Идентификатор
+          example: 1
+        description:
+          type: string
+          title: Название (описание) акции
+          example: 'Туманный Альбион'
+        country:
+          $ref: '#/components/schemas/Country'
+        city:
+          $ref: '#/components/schemas/NamedItem'
+        hotel:
+          $ref: '#/components/schemas/NamedItem'
+        discount:
+          $ref: '#/components/schemas/Discount'
+      required:
+        - id
+        - description
+        - country
+        - discount
+
+    CreateSearchRequest:
+      type: object
+      title: Запрос на создание поиска
+      properties:
+        city:
+          type: integer
+          title: Идентификатор города
+          example: 1
+        checkIn:
+          type: string
+          format: date
+          title: Дата заезда
+          example: 2021-05-01
+        checkOut:
+          type: string
+          format: date
+          title: Дата выезда
+          example: 2021-05-01
+      required:
+        - city
+        - checkIn
+        - checkOut
+    SearchRequest:
+      type: object
+      title: Поисковый запрос
+      properties:
+        id:
+          type: integer
+          title: Идентификатор
+          example: 1
+        city:
+          $ref: '#/components/schemas/City'
+        checkIn:
+          type: string
+          format: date
+          title: Дата заезда
+          example: 2021-05-01
+        checkOut:
+          type: string
+          format: date
+          title: Дата выезда
+          example: 2021-05-01
+      required:
+        - id
+        - city
+        - checkIn
+        - checkOut
+    Money:
+      type: object
+      title: Стоимость
+      properties:
+        amount:
+          type: number
+          title: Значение
+        currency:
+          type: string
+          title: Валюта
+          enum:
+            - RUB
+            - EUR
+            - USD
+      required:
+        - amount
+        - currency
+    SearchResult:
+      type: object
+      title: Предложение размещения в отеле
+      properties:
+        id:
+          type: integer
+          title: Идентификатор
+          example: 1
+        hotel:
+          $ref: '#/components/schemas/Hotel'
+        roomName:
+          type: string
+          title: Название комнаты (номера)
+        price:
+          $ref: '#/components/schemas/Money'
+        meal:
+          $ref: '#/components/schemas/Meal'
+      required:
+        - id
+        - hotel
+        - roomName
+        - price
+    Meal:
+      type: object
+      title: Тип питания
+      properties:
+        id:
+          type: integer
+          title: Идетификатор
+          example: 1
+        name:
+          type: string
+          title: Название
+          example: Завтрак
+      required:
+        - id
+        - name
+    SearchResultV2:
+      type: object
+      title: Предложение размещения в отеле
+      allOf:
+        - $ref: '#/components/schemas/SearchResult'
+      properties:
+        rackRate:
+          $ref: '#/components/schemas/RackRate'
+        specialOffer:
+          $ref: '#/components/schemas/AppliedDiscount'
+      required:
+        - rackRate
+    RackRate:
+      type: object
+      title: Стоимость без скидок
+      allOf:
+        - $ref: '#/components/schemas/Money'
+    DiscountAmount:
+      type: object
+      title: Размер скидки
+      allOf:
+        - $ref: '#/components/schemas/Money'
+    MinPrice:
+      type: object
+      title: Минимальная стоимость размещения в отеле
+      allOf:
+        - $ref: '#/components/schemas/Money'
+    AppliedDiscount:
+      type: object
+      title: Описание примененной скидки
+      properties:
+        id:
+          type: integer
+          title: Идентификатор акции
+          example: 1
+        description:
+          type: string
+          title: Название акции
+        discount:
+          $ref: '#/components/schemas/DiscountAmount'
+      required:
+        - id
+        - description
+        - discount
+    SearchResultV3:
+      type: object
+      title: Номера в одном отеле
+      properties:
+        hotel:
+          $ref: '#/components/schemas/Hotel'
+        minPrice:
+          $ref: '#/components/schemas/MinPrice'
+        offers:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchResultV3Offer'
+      required:
+        - hotel
+        - minPrice
+        - offers
+    SearchResultV3Offer:
+      type: object
+      title: Предложение размещения в отеле
+      properties:
+        id:
+          type: integer
+          title: Идентификатор
+          example: 1
+        roomName:
+          type: string
+          title: Название комнаты (номера)
+        price:
+          $ref: '#/components/schemas/Money'
+        meal:
+          $ref: '#/components/schemas/Meal'
+        rackRate:
+          $ref: '#/components/schemas/RackRate'
+        specialOffer:
+          $ref: '#/components/schemas/AppliedDiscount'
+tags:
+  - name: Общие вопросы
+    description: >
+      В процессе выполнения заданий вы можете изменять абсолютно все,
+      что посчитаете нужным. Однако, не стоит увлекаться работой, не связанной
+      напрямую с заданиями.
+
+
+      Если вы считаете необходимым сопроводить свою работу словами,
+      то добавьте в корень проекта файл Comments.txt со всеми своими
+      комментариями.
+
+
+      Обратите внимание. При использовании в методах постраничной выдачи,
+      в ответе присутствует HTTP-заголовок Content-Range. В нем вы можете
+      увидеть какая часть данных представлена и сколько всего записей
+      соответствуют параметрам текущей выборки.
+
+  - name: Работа с базой данных
+    description: >
+      Изменения в базе данных следует оформить миграцией. Если вы внесли изменения в классы
+      сущностей ORM, выполните команду
+
+
+      ```
+      php bin/console doctrine:migrations:diff
+      ```
+
+
+      будет сгенерирована миграция со всеми необходимыми изменениями структуры базы данных. Если необходимо
+      внести изменения не связанные с сущностями ORM, можно сгенерировать пустую миграцию
+
+
+      ```
+      php bin/console doctrine:migrations:generate
+      ```
+
+
+      и добавить в нее необходимые запросы.
+      После создания миграции выполните
+
+
+      ```
+      php bin/console doctrine:migrations:migrate
+      ```
+
+
+      для применения изменений.
+
+
+      В случае необходимости, в любой момент, вы можете удалить файл ./var/app.db,
+      удалить собственные миграции, повторить операцию применения миграций и
+      получить базу данных в исходном состоянии.
+
+  - name: Справочники
+    description: >
+      Списки основных сущностей (Страны, Города, Отели). Их идентификаторы
+      потребуются для составления запросов, при настройке условий и проверке
+      работоспособности выполненных заданий.
+  - name: Поиск отелей
+    description: >
+      Инициализация поиска вариантов проживания в отелях города и получение
+      его результатов. Все задания строятся вокруг этой операции.
+      Методы нужны для просмотра результатов выполненной работы.
+  - name: Специальные предложения
+    description: >
+      Специальные предложения (или акции) - возможность настроить предоставление скидок,
+      на проживание в определенном отеле, городе или стране. С ними будет связано
+      [Задание 1](#tag/Zadanie-1). В данном разделе представлены методы создания,
+      просмотра и удаления подобных скидок.
+  - name: Задание 1
+    description: >
+      ## Вводные данные
+
+      В разделе [Специальные предложения](#tag/Specialnye-predlozheniya) представлены
+      структуры данных и методы, позволяющие настроить применение скидок на проживание
+      в отелях.
+
+      <p>
+          У каждого спецпредложения могут быть указаны:
+      </p>
+      <ul>
+          <li>Только страна - предложение действует для всех отелей в этой стране</li>
+          <li>Страна и город - предложение действует для всех отелей в этом городе</li>
+          <li>Страна, город и отель - предложение действует только для этого отеля</li>
+      </ul>
+      <p>
+          А также, тип скидки:
+      </p>
+      <ul>
+          <li>Процент - рассчитывается от полной стоимости номера</li>
+          <li>Рубли - фиксированная сумма в отечественной валюте за 1 ночь проживания</li>
+      </ul>
+      <p>
+          и размер скидки.
+      </p>
+      <p>
+          В настоящее время эти "Акции" никак не используются.
+      </p>
+
+
+      ## Задача
+
+
+      <p>
+          Вам необходимо организовать проверку возможности применения спецпредложения к результату
+          поиска. Если по совпадению страны, города или отеля, применить специальное предложение
+          возможно, то вывести информацию о новой стоимости и название акции.
+      </p>
+      <p>
+          Возможны ситуации, когда к одному варианту размещения, подходит сразу несколько специальных предложений.
+          В таком случае, нужно выбрать одно, руководствуясь приоритетами:
+      </p>
+      <ul>
+          <li>Предложение с указанием конкретного отеля важнее предложений с указанием только города или страны</li>
+          <li>Предложение без отеля, но с городом, важнее предложения для всей страны без указания города</li>
+          <li>Если два предложения имеют одинаковый приоритет, нужно выбрать то из них, которое предоставит наибольшую скидку</li>
+      </ul>
+      <p>
+        В результате выполнения задания, метод API, описанный ниже, должен стать работоспособным.
+        Его ответ соответствовать описанной структуре.
+      </p>
+  - name: Задание 2
+    description: >
+      ## Вводные данные
+
+      В настоящий момент, [в результатах поиска](#operation/getSearchResults)
+      выдается набор комнат. У каждой комнаты есть ссылка на отель, но комнаты
+      одного отеля, могут быть выданы на разных страницах, в зависимости от условий
+      сортировки.
+
+
+      ## Задача
+
+
+      Нужно добиться того, чтобы предложения были сгруппированы по отелю. Метод API
+      и структура его результата описаны ниже.
+
+
+      Внимание. Группировка означает, что все (!) предложения одного отеля должны быть
+      собраны вместе и выводиться на одной странице. Параметры постраничной выдачи
+      должны будут влиять на количество отелей, а не номеров в выборке. Сортировка
+      по цене, основываться на минимальной стоимости проживания в отеле.
+  - name: Оформление результатов
+    description: >
+      <p>
+          Результаты нужно предоставить в виде патча. Для этого:
+      </p>
+      <ul>
+          <li>В терминале перейти в директорию проекта</li>
+          <li>
+              Если вами были добавлены какие-нибудь файлы, то необходимо
+              выполнить команду
+
+
+      ```
+      git add .
+      ```
+
+
+      (если у вас не установлен Git,
+              то нужно разобраться с его установкой и использованием в вашей операционной системе самостоятельно)
+          </li>
+          <li>
+              Выполнить команду
+
+
+      ```
+      git diff HEAD > /path/myname.patch
+      ```
+
+
+      где myname - ваша
+              фамилия, имя или ник латинскими буквами, а /path - путь к создаваемому файлу.
+          </li>
+          <li>
+              Отправить сформированный файл патча проверяющему.
+          </li>
+      </ul>
+
+  - name: Критерии оценки
+    description: >
+      У этих задач нет однозначно правильных, эталонных решений.
+      Если вы выбрали не тот способ решения, который мы ожидали - это
+      нормально.
+
+
+      Хорошо:
+
+      * любое эффективное решение, мысль которого понятна.
+
+
+      Замечательно:
+
+      * если хорошо
+
+      * плюс внимание к мелочам и аккуратность
+
+
+      Удовлетворительно, но не сильно порадует:
+
+      * все условия задач выполнены, но вы делаете в 100 строк то, что решается в три
+
+
+      Плохо, если:
+
+      * вы сделали совсем не то, что описано в задании.
+
+      * делали то, но не смогли добиться нужного результата (работает
+      с ошибками, вычисляет неправильно, группирует крокодилов с бегемотами).
+
+      * в вашем коде сумбур, алгоритмы вьются нитями Ариадны по лабиринтам
+      с Минотаврами
