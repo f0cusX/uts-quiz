@@ -55,6 +55,12 @@ class SearchResult
      */
     private $comparePrice;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=SpeacialOffer::class)
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $specialOffer;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -130,12 +136,24 @@ class SearchResult
 
     /**
      * @param int $comparePrice
-     * @return $this
+     * @return SearchResult
      */
     public function setComparePrice(int $comparePrice): self
     {
         $this->comparePrice = $comparePrice;
 
         return $this;
+    }
+
+    public function setSpecialOffer(SpecialOffer $specialOffer): self
+    {
+        $this->specialOffer = $specialOffer;
+
+        return $this;
+    }
+
+    public function getSpecialOffer(): ?SpecialOffer
+    {
+        return $this->specialOffer;
     }
 }

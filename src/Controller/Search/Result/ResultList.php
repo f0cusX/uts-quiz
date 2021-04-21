@@ -36,7 +36,7 @@ class ResultList
     }
 
     /**
-     * @Route("/api/v1/search_requests/{searchRequest}/results", requirements={"searchRequest": "\d+"}, methods={"get"}, name="search_results_list")
+     * @Route("/api/v2/search_requests/{searchRequest}/results", requirements={"searchRequest": "\d+"}, methods={"get"}, name="search_results_list")
      * @param SearchRequest $searchRequest
      * @param Page $page
      * @param PricingSort $sort

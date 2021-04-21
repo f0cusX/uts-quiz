@@ -7,6 +7,7 @@ use App\Entity\SearchResult;
 use App\Repository\CurrencyRepository;
 use App\Repository\HotelRepository;
 use App\Repository\MealRepository;
+use App\Repository\SpecialOfferRepository;
 
 class Searcher
 {
@@ -26,6 +27,10 @@ class Searcher
      * @var CurrencyRepository
      */
     private $currencyRepository;
+    /**
+     * @var SpecialOfferRepository
+     */
+    private $specialOfferRepository;
 
     /**
      * Searcher constructor.
@@ -33,13 +38,15 @@ class Searcher
      * @param HotelRepository $hotelRepository
      * @param MealRepository $mealRepository
      * @param CurrencyRepository $currencyRepository
+     * @param SpecialOfferRepository $specialOfferRepository
      */
-    public function __construct(ProviderInterface $offerProvider, HotelRepository $hotelRepository, MealRepository $mealRepository, CurrencyRepository $currencyRepository)
+    public function __construct(ProviderInterface $offerProvider, HotelRepository $hotelRepository, MealRepository $mealRepository, CurrencyRepository $currencyRepository, SpecialOfferRepository $specialOfferRepository)
     {
         $this->offerProvider = $offerProvider;
         $this->hotelRepository = $hotelRepository;
         $this->mealRepository = $mealRepository;
         $this->currencyRepository = $currencyRepository;
+        $this->specialOfferRepository = $specialOfferRepository;
     }
 
     public function search(SearchRequest $request): array
@@ -61,6 +68,7 @@ class Searcher
         $hotels = $this->hotelRepository->findByIds(array_keys($hotelIds));
         $meals = $this->mealRepository->findByIds(array_keys($mealIds));
         $currencies = $this->currencyRepository->findAllRatesIndexById();
+        //$specialOffers = $this->specialOfferRepository->
 
         $results = [];
         foreach ($offers as $offer) {
@@ -78,6 +86,7 @@ class Searcher
                 ->setHotel($hotel)
                 ->setRoomName($offer->getRoomName())
                 ->setComparePrice(intval($price->getAmount() * $currencyRate))
+                ->setSpecialOffer($offer->getSpecialOffer())
             ;
         }
 

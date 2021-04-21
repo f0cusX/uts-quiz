@@ -24,6 +24,11 @@ class ProviderOffer
      * @var int|null
      */
     private $meal;
+    /**
+     * @var SpecialOffer
+     */
+    private $specialOffer;
+
 
     /**
      * ProviderOffer constructor.
@@ -38,6 +43,7 @@ class ProviderOffer
         $this->roomName = $roomName;
         $this->price = $price;
         $this->meal = $meal;
+        $this->specialOffer = new SpecialOffer();
     }
 
     /**
@@ -70,5 +76,13 @@ class ProviderOffer
     public function getMeal(): ?int
     {
         return $this->meal;
+    }
+
+    /**
+     * @return SpecialOffer
+     */
+    public function getSpecialOffer(): SpecialOffer
+    {
+        return $this->specialOffer;
     }
 }
