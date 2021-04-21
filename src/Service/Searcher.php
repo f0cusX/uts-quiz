@@ -86,7 +86,7 @@ class Searcher
                 ->setHotel($hotel)
                 ->setRoomName($offer->getRoomName())
                 ->setComparePrice(intval($price->getAmount() * $currencyRate))
-                ->setSpecialOffer($offer->getSpecialOffer())
+                //->setSpecialOffer($offer->getSpecialOffer())
             ;
         }
 

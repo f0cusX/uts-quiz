@@ -52,7 +52,6 @@ class Create
         $entity = $this->transformer->transform($csr, SearchRequest::class);
         $this->doctrine->persist($entity);
         foreach ($this->searcher->search($entity) as $result) {
-            dd($result);
             $this->doctrine->persist($result);
         }
         $this->doctrine->flush();

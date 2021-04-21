@@ -57,7 +57,7 @@ class SearchResult
 
     /**
      * @ORM\ManyToOne(targetEntity=SpeacialOffer::class)
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\JoinColumn(name="special_offer_id", nullable=true)
      */
     private $specialOffer;
 
@@ -145,15 +145,15 @@ class SearchResult
         return $this;
     }
 
-    public function setSpecialOffer(SpecialOffer $specialOffer): self
+    public function getSpecialOffer(): ?SpecialOffer
+    {
+        return $this->specialOffer;
+    }
+
+    public function setSpecialOffer(?SpecialOffer $specialOffer): self
     {
         $this->specialOffer = $specialOffer;
 
         return $this;
-    }
-
-    public function getSpecialOffer(): ?SpecialOffer
-    {
-        return $this->specialOffer;
     }
 }
